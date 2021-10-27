@@ -2,6 +2,11 @@
   display: flex;
 }
 
+#App-main {
+  width: 70%;
+  background-color: #fbf8f9;
+}
+
 #App-header {
   display: flex;
   justify-content: space-around;
@@ -11,15 +16,34 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  
+  height: 78vh;
 }
 #App-center h1{
   font-size: 80pt;
 }
 
+#App-aside {
+  width: 30%;
+  text-align: center;
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100vh;
+}
+
+#App-aside p {
+  margin-top: 35px;
+  margin-bottom: 35px;
+}
+
 #App-footer {
   display: flex;
   justify-content: space-around;
+  align-items: center;
 }
+
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);

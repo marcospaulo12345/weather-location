@@ -6,8 +6,9 @@ import './App.css';
 function App() {
   const [location, setLocation] = useState(false);
   const [weather, setWeather]  = useState(false);
-  const [tempHorly, setTempHourly] = useState(false);
+  const [tempHorly, setTempHourly] = useState([]);
   const [city, setCity] = useState('');
+  const [week, setWeek] = useState([]);
 
   let getWeather = async (lat, long) => {
     let res = await axios.get('https://api.openweathermap.org/data/2.5/onecall', {
@@ -19,17 +20,36 @@ function App() {
         units: 'metric'
       }
     });
+
+    for(var i=0; i<8; i++){
+      res.data.daily[''+i]['dt'] = getDay(res.data.daily[''+i]['dt'])
+    }
     setWeather(res.data);
-    setTempHourly(res.data.hourly)
-    //for(var i =0; i<7; i++){
-      //console.log(res.data.daily[String(i)])
-    //}
-    console.log(tempHorly)
-    //console.log(res.data)
-    
+    console.log(res.data)
+    let lista = []
+    for(var i=0; i<10; i++){
+      lista.push(res.data.hourly[''+i]);
+      lista[i]['dt'] = getHour(lista[i]['dt'])
+    }
+
+    setTempHourly(lista)
 
     let res_city = await axios.get('https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=' + lat + '&longitude=' + long + '&localityLanguage=pt')
     setCity(res_city.data['city'])
+  }
+
+  function getHour(dataUtc){
+    var data = new Date(dataUtc * 1000)
+    data = data.getHours() + ':00'
+    return data;
+  }
+
+  function getDay(dataUtc){
+    var week = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab'];
+    var data = new Date(dataUtc * 1000);
+
+    data = week[data.getDay()];
+    return data;
   }
 
   useEffect(() => {
@@ -55,7 +75,7 @@ function App() {
   }else{
     return (
       <Fragment id='App'>
-        <main>
+        <main id='App-main'>
           <header id='App-header'>
             <p>{city}</p>
             <p>26.10.2021</p>
@@ -70,15 +90,20 @@ function App() {
           </section>
 
           <footer id='App-footer'>
+            <p>-----</p>
             { weather['daily'].map(item => (
-              <p>{item['temp']['day']}</p>
+              <div>
+                <p>{item['dt']}</p>
+                <p>{parseInt(item['temp']['day'])}°</p>
+              </div>
             )) }
+            <p>-----</p>
           </footer>
         </main>
-        <aside>
-          { weather['hourly'].map((item, index) => (
-              <p>{item['temp']}</p>
-            )) }
+        <aside id='App-aside'>
+          { tempHorly.map((item, indice) => (
+            <p key={indice}>{item['dt']}   <b>{parseInt(item['temp'])}°</b></p>
+          ))}
         </aside>
     </Fragment>
       );
